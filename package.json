@@ -4,7 +4,10 @@
   "description": "Statistics functions for JS",
   "main": "jsStatistics.js",
   "scripts": {
-    "test": "mocha"
+    "test": "npm run lint && npm run mocha",
+    "lint": "eslint src/. test/. --config .eslintrc.json",
+    "lintfix": "eslint src/. test/. --config .eslintrc.json --fix",
+    "mocha": "mocha test/ --recursive --exit"
   },
   "repository": {
     "type": "git",
@@ -13,6 +16,7 @@
   "author": "Henderb Rodriguez",
   "license": "GPL-3.0",
   "devDependencies": {
+    "eslint": "^7.24.0",
     "mocha": "^8.3.2"
   }
 }
