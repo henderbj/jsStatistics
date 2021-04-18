@@ -70,11 +70,15 @@ exports.losses = (data) => {
 
 // calculate RSI indicator of all values of data: https://www.macroption.com/rsi-calculation/
 exports.rsi = (data) => {
+  var rs = -1;
   const ups = exports.gains(data);
   const downs = exports.losses(data);
   const avgUps = exports.average(ups);
   const avgDowns = exports.average(downs);
-  const rs = avgUps / avgDowns;
+  if(avgDowns > 0){
+    rs = avgUps / avgDowns;
+  }
+  else rs = 999999999999;
   const rsi = 100 - (100 / (rs + 1));
   return rsi;
 };
