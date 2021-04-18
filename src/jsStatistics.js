@@ -21,8 +21,15 @@ const testArray = function(data){
 };
 
 exports.average = function(data){
+  var result;
   testArray(data);
-  return exports.sumAll(data) / data.length;
+  if(data.length){
+    result = exports.sumAll(data) / data.length;
+  }
+  else{
+    result = 0;
+  }
+  return result;
 };
 
 exports.sumAll = function(data){
@@ -44,6 +51,7 @@ exports.sum2 = (accumulator, currentValue) => {
 
 // get array with gains where currentItem > (currentItem-1)
 exports.gains = (data) => {
+  testArray(data);
   const result = data.map((current, index, array) => {
     if(index === 0)
       return null;
@@ -57,6 +65,7 @@ exports.gains = (data) => {
 
 // get array with values where currentItem < (currentItem-1)
 exports.losses = (data) => {
+  testArray(data);
   const result = data.map((current, index, array) => {
     if(index === 0)
       return null;
@@ -71,6 +80,7 @@ exports.losses = (data) => {
 // calculate RSI indicator of all values of data: https://www.macroption.com/rsi-calculation/
 exports.rsi = (data) => {
   var rs = -1;
+  testArray(data);
   const ups = exports.gains(data);
   const downs = exports.losses(data);
   const avgUps = exports.average(ups);
