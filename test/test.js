@@ -34,7 +34,7 @@ describe('jsStatistics Module', function() {
   describe('#sumAll)', function() {
     it('should give correct sum of array data', function() {
       assert.equal(stats.sumAll([1,2,3,4]), 10);
-    });   
+    });
   });
 
   describe('#parseNumber)', function() {
@@ -47,7 +47,7 @@ describe('jsStatistics Module', function() {
 
     it('should give correct value of number string', function() {
       assert.equal(stats.parseNumber('100.25'), 100.25);
-    });   
+    });
   });
 
   describe('#rsi)', function() {
