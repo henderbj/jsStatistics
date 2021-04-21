@@ -53,10 +53,14 @@ exports.sum2 = (accumulator, currentValue) => {
 exports.gains = (data) => {
   testArray(data);
   const result = data.map((current, index, array) => {
+    const previous = parseFloat(array[index-1]);
     if(index === 0)
       return null;
-    if(current > array[index-1]){
-      return parseFloat(current) - parseFloat(array[index-1]);
+    current = parseFloat(current);
+
+    if(current > previous){
+      const myFloat = current - previous;
+      return myFloat;
     }
     else return 0;
   });
@@ -70,7 +74,8 @@ exports.losses = (data) => {
     if(index === 0)
       return null;
     if(current < array[index-1]){
-      return  parseFloat(array[index-1]) - parseFloat(current);
+      const myFloat = parseFloat(array[index-1]) - parseFloat(current);
+      return  myFloat;
     }
     else return 0;
   });
@@ -78,17 +83,42 @@ exports.losses = (data) => {
 };
 
 // calculate RSI indicator of all values of data: https://www.macroption.com/rsi-calculation/
-exports.rsi = (data) => {
+exports.rsi = (data, period=14) => {
   var rs = -1;
+  var rsiData = [];
+  var avgGain, avgLoss;
+  const old = {avgGain: 0, avgLoss: 0};
   testArray(data);
-  const ups = exports.gains(data);
-  const downs = exports.losses(data);
-  const avgUps = exports.average(ups);
-  const avgDowns = exports.average(downs);
-  if(avgDowns > 0){
-    rs = avgUps / avgDowns;
+  const gains = exports.gains(data);
+  const losses = exports.losses(data);
+
+  for(let position = period; position < data.length; position++){
+    if(position == period){
+      const gainsSamples = gains.slice(position - period, position);
+      const lossesSamples = losses.slice(position - period, position);
+      avgGain = exports.average(gainsSamples);
+      avgLoss = exports.average(lossesSamples);
+    }
+    else{
+      const newGain = gains[position-1];
+      const newLoss = losses[position-1];
+      avgGain = (old.avgGain*(period - 1) + newGain) / period;
+      avgLoss = (old.avgLoss*(period - 1) + newLoss) / period;
+    }
+
+    if(avgLoss > 0){
+      rs = avgGain / avgLoss;
+    }
+    else {
+      rs = 99999999999;
+    }
+    old.avgGain = avgGain;
+    old.avgLoss = avgLoss;
+    const rsi = 100-(100/(rs + 1));
+    rsiData[position] = rsi;
   }
-  else rs = 999999999999;
-  const rsi = 100 - (100 / (rs + 1));
-  return rsi;
+  for(let i = 0; i<period; i++){
+    rsiData[i] = -1;
+  }
+  return rsiData;
 };
