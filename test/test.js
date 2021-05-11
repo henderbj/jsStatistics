@@ -52,28 +52,26 @@ describe('jsStatistics Module', function() {
 
   describe('#rsi)', function() {
     it('should give correct array of gains', function() {
-      const gains = stats.gains([1.2,44.09,44.15,7,2.3,11.7]);
+      const gainsFull = stats.gains([1.2,44.09,44.15,7,2.3,11.7]);
+      const gains = gainsFull.slice(1);
       const gainsFixed = gains.map(x => parseFloat(x.toFixed(2)));
       assert.deepEqual(gainsFixed, [42.89,0.06,0,0,9.4]);
     });
 
     it('should give correct array of losses', function() {
-      const losses = stats.losses([1.3,3.5,7.7,7.11,2.13,11.17]);
+      const lossesFull = stats.losses([1.3,3.5,7.7,7.11,2.13,11.17]);
+      const losses = lossesFull.slice(1);
       const lossesFixed = losses.map(x => parseFloat(x.toFixed(2)));
       assert.deepEqual(lossesFixed, [0,0,0.59,4.98,0]);
     });
 
-    const testRsi = function(data, expectedData, period=14, invalidValue=-1) {
+    const testRsi = function(data, expectedData, period=14) {
       const rsi = stats.rsi(data, period);
       const rsiFixed = rsi.map(x => {
         return parseFloat(x.toFixed(2));
       });
-      const invalid = [];
-      for(let i = 0; i < period; i++){
-        invalid.push(invalidValue);
-      }
-      const expected = invalid.concat(expectedData);
-      assert.deepEqual(rsiFixed, expected);
+      const expected = rsiFixed.slice(period);
+      assert.deepEqual(expected, expectedData);
     };
 
     it('should give correct rsi indicator', function() {

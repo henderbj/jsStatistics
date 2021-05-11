@@ -21,7 +21,7 @@ const testArray = function(data){
 };
 
 exports.average = function(data){
-  var result;
+  let result;
   testArray(data);
   if(data.length){
     result = exports.sumAll(data) / data.length;
@@ -53,9 +53,9 @@ exports.sum2 = (accumulator, currentValue) => {
 exports.gains = (data) => {
   testArray(data);
   const result = data.map((current, index, array) => {
-    const previous = parseFloat(array[index-1]);
     if(index === 0)
-      return null;
+      return NaN;
+    const previous = parseFloat(array[index-1]);
     current = parseFloat(current);
 
     if(current > previous){
@@ -64,7 +64,7 @@ exports.gains = (data) => {
     }
     else return 0;
   });
-  return result.slice(1); //first element removed
+  return result;
 };
 
 // get array with values where currentItem < (currentItem-1)
@@ -72,21 +72,23 @@ exports.losses = (data) => {
   testArray(data);
   const result = data.map((current, index, array) => {
     if(index === 0)
-      return null;
-    if(current < array[index-1]){
-      const myFloat = parseFloat(array[index-1]) - parseFloat(current);
+      return NaN;
+    const previous = parseFloat(array[index-1]);
+    current = parseFloat(current);
+    if(current < previous){
+      const myFloat = previous - current;
       return  myFloat;
     }
     else return 0;
   });
-  return result.slice(1); //first element removed
+  return result;
 };
 
 // calculate RSI indicator of all values of data: https://www.macroption.com/rsi-calculation/
 exports.rsi = (data, period=14) => {
-  var rs = -1;
-  var rsiData = [];
-  var avgGain, avgLoss;
+  let rs = NaN;
+  let rsiData = [];
+  let avgGain, avgLoss;
   const old = {avgGain: 0, avgLoss: 0};
   testArray(data);
   const gains = exports.gains(data);
@@ -94,14 +96,14 @@ exports.rsi = (data, period=14) => {
 
   for(let position = period; position < data.length; position++){
     if(position == period){
-      const gainsSamples = gains.slice(position - period, position);
-      const lossesSamples = losses.slice(position - period, position);
+      const gainsSamples = gains.slice(position - period + 1, position + 1);
+      const lossesSamples = losses.slice(position - period + 1, position + 1);
       avgGain = exports.average(gainsSamples);
       avgLoss = exports.average(lossesSamples);
     }
     else{
-      const newGain = gains[position-1];
-      const newLoss = losses[position-1];
+      const newGain = gains[position];
+      const newLoss = losses[position];
       avgGain = (old.avgGain*(period - 1) + newGain) / period;
       avgLoss = (old.avgLoss*(period - 1) + newLoss) / period;
     }
@@ -115,10 +117,11 @@ exports.rsi = (data, period=14) => {
     old.avgGain = avgGain;
     old.avgLoss = avgLoss;
     const rsi = 100-(100/(rs + 1));
+
     rsiData[position] = rsi;
   }
   for(let i = 0; i<period; i++){
-    rsiData[i] = -1;
+    rsiData[i] = NaN;
   }
   return rsiData;
 };
